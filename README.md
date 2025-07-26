@@ -50,7 +50,7 @@ Ecommerce_Webscraping/
 
 1. **Clone the repository**:
    ```bash
-   git clone <repository-url>
+   git clone <https://github.com/Diabloansh/WebscrapingScript.git>
    cd Ecommerce_Webscraping
    ```
 
@@ -101,7 +101,7 @@ scrapy crawl product_spider -s DOWNLOAD_DELAY=1 -s CONCURRENT_REQUESTS=2 -o prod
 
 ```bash
 # Basic scraping with JSON output
-scrapy crawl product_spider -o uniqlo_products.json
+scrapy crawl product_spider -o output_products.json
 
 # Scraping with custom settings for faster execution
 scrapy crawl product_spider -s CONCURRENT_REQUESTS=8 -s DOWNLOAD_DELAY=0.5 -o products.json
@@ -119,16 +119,16 @@ Each scraped product contains the following fields:
 
 ```json
 {
-    "name": "Extra Fine Merino Crew Neck Long Sleeve Sweater",
+    "name": "Name of the Product scraped",
     "price": "2,990.00",
-    "url": "https://www.uniqlo.com/in/en/products/E450535-000?colorCode=COL18&sizeCode=SMA004",
-    "product_id": "E450535-000",
+    "url": "https://www.brandwebsite.com/products/producturl",
+    "product_id": "product id obtained from the product url",
     "image_urls": [
-        "https://image.uniqlo.com/UQ/ST3/in/imagesgoods/450535/item/ingoods_18_450535_3x4.jpg?width=750",
-        "https://image.uniqlo.com/UQ/ST3/in/imagesgoods/450535/sub/ingoods_450535_sub1_3x4.jpg?width=750"
+        "https://image.product.com/1",
+        "https://image.product.com/2"
     ],
-    "image_count": 6,
-    "image_url": "https://image.uniqlo.com/UQ/ST3/in/imagesgoods/450535/item/ingoods_18_450535_3x4.jpg?width=750"
+    "image_count": "Number of images Scraped",
+    "image_url": "https://image.product.com/the_url_of_the_main_image"
 }
 ```
 
@@ -140,7 +140,7 @@ Each scraped product contains the following fields:
 | `price` | String | Product price in Indian Rupees |
 | `url` | String | Full product page URL |
 | `product_id` | String | Unique product identifier (extracted from URL) |
-| `image_urls` | Array | List of all product gallery image URLs (750px width) |
+| `image_urls` | Array | List of all product gallery image URLs |
 | `image_count` | Integer | Number of available product images |
 | `image_url` | String | Primary product image URL (backward compatibility) |
 
@@ -155,9 +155,9 @@ SPIDER_MODULES = ['scrapy_webscraper.spiders']
 NEWSPIDER_MODULE = 'scrapy_webscraper.spiders'
 
 # Performance settings
-CONCURRENT_REQUESTS = 1                    # Number of concurrent requests
-CONCURRENT_REQUESTS_PER_DOMAIN = 4        # Concurrent requests per domain
-DOWNLOAD_DELAY = 2                        # Delay between requests (seconds)
+CONCURRENT_REQUESTS = 16                     # Number of concurrent requests
+CONCURRENT_REQUESTS_PER_DOMAIN = 12        # Concurrent requests per domain
+DOWNLOAD_DELAY = 0.10                        # Delay between requests (seconds)
 
 # User agent
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0'
@@ -173,7 +173,7 @@ LOG_LEVEL = 'INFO'
 You can modify the spider behavior by editing `product_spider.py`:
 
 - **Resource Blocking**: Modify the `block_unwanted_resources` method to change which resources are blocked
-- **Selectors**: Update CSS selectors if Uniqlo changes their HTML structure  
+- **Selectors**: Update CSS selectors if Ecommerce Website changes their HTML structure  
 - **Timeout Settings**: Adjust `PageMethod` timeout values for slower connections
 - **Image Resolution**: Change image URL parameters for different resolutions
 
@@ -222,15 +222,9 @@ Uses CSS selectors optimized for Uniqlo's HTML structure:
 
 ### Performance Tips
 
-1. **Increase Concurrency** (for faster scraping):
-   ```bash
-   scrapy crawl product_spider -s CONCURRENT_REQUESTS=8 -s CONCURRENT_REQUESTS_PER_DOMAIN=8
-   ```
+1. **Increase Concurrency** (for faster scraping)
 
-2. **Reduce Delays** (be respectful to the server):
-   ```bash
-   scrapy crawl product_spider -s DOWNLOAD_DELAY=0.5
-   ```
+2. **Reduce Delays** (be respectful to the server)
 
 3. **Limit Items** (for testing):
    ```bash
@@ -240,9 +234,8 @@ Uses CSS selectors optimized for Uniqlo's HTML structure:
 ## 📈 Expected Performance
 
 ### Typical Performance Metrics
-- **Speed**: ~12 items per minute (with default settings)
-- **Success Rate**: >95% for accessible products
-- **Resource Efficiency**: 80-90% reduction in bandwidth usage
+- **Speed**: ~40-50 items per minute (with default settings)
+- **Success Rate**: >98% for accessible products
 - **Memory Usage**: ~75MB peak usage
 
 ### Sample Statistics
@@ -315,22 +308,13 @@ scrapy crawl product_spider -L DEBUG -o products.json
 4. **Terms of Service**: Ensure compliance with website terms
 5. **Data Usage**: Use scraped data responsibly and legally
 
-### Best Practices
+### Recommended Practices
 
 - Don't overload servers with too many concurrent requests
 - Implement proper error handling and retries
 - Store data securely and use it ethically
 - Keep your scraper updated with website changes
-- Consider reaching out to website owners for official APIs
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and test thoroughly
-4. Commit your changes: `git commit -am 'Add feature'`
-5. Push to the branch: `git push origin feature-name`
-6. Submit a pull request
 
 ### Development Guidelines
 
@@ -340,19 +324,6 @@ scrapy crawl product_spider -L DEBUG -o products.json
 - Update documentation for any changes
 - Ensure backward compatibility
 
-## 📄 License
-
-This project is for educational purposes only. Please ensure compliance with applicable laws and terms of service when using this scraper.
-
-## 🆘 Support
-
-For issues, questions, or contributions:
-
-1. Check existing issues in the repository
-2. Create a new issue with detailed description
-3. Include error logs and system information
-4. Provide steps to reproduce the problem
-
 ## 🔄 Version History
 
 - **v1.0.0**: Initial release with basic scraping functionality
@@ -360,7 +331,3 @@ For issues, questions, or contributions:
 - **v1.2.0**: Implemented resource blocking for performance optimization
 - **v1.3.0**: Enhanced image extraction with multiple resolutions
 - **v1.4.0**: Improved error handling and robustness
-
----
-
-**⚠️ Disclaimer**: This tool is for educational and research purposes only. Users are responsible for ensuring their use complies with applicable laws, regulations, and website terms of service. The developers are not responsible for any misuse of this software.

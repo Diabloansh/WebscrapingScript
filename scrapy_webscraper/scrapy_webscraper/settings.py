@@ -1,5 +1,4 @@
-# File contents for settings.py
-
+# Scrapy settings for scrapy_webscraper project
 BOT_NAME = 'scrapy_webscraper'
 
 SPIDER_MODULES = ['scrapy_webscraper.spiders']
@@ -10,17 +9,18 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
-DOWNLOAD_DELAY = 0.10
 
+
+# only enable this if you have a specific pipeline to use
 # ITEM_PIPELINES = {
 #    "scrapy_webscraper.pipelines.ScrapyWebscraperPipeline": 300,
 # }
 
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
+# Configure maximum concurrent requests performed by Scrapy
 CONCURRENT_REQUESTS = 16
 
-# Configure a delay for requests for the same website (default: 0)
-# DOWNLOAD_DELAY = 3
+# Configure a delay for requests for the same website
+DOWNLOAD_DELAY = 0.10
 
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 12
@@ -31,6 +31,8 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 12
 
 # Disable Telnet Console (enabled by default)
 # TELNETCONSOLE_ENABLED = False
+
+# Adjust logging level
 LOG_LEVEL = 'INFO'
 
 # Override the default request headers:
@@ -42,11 +44,6 @@ LOG_LEVEL = 'INFO'
 # Enable or disable extensions
 # EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-# }
-
-# Configure item pipelines
-# ITEM_PIPELINES = {
-#    'scrapy_webscraper.pipelines.YourPipelineName': 300,
 # }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

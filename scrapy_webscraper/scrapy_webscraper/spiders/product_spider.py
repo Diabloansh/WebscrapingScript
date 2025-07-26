@@ -10,8 +10,6 @@ class ProductSpider(Spider):
     
     start_urls = ['https://www.uniqlo.com/in/sitemap_in-en_l3_hreflang.xml']
 
-    # The script exclusion pattern is no longer needed with the whitelist approach.
-
     async def block_unwanted_resources(self, page: Page):
         """
         A selective approach to block resources.
@@ -96,7 +94,7 @@ class ProductSpider(Spider):
         """
         Extracts data from the final product page.
         """
-        # Updated selectors based on actual HTML structure
+        # Update selectors based on website HTML structure
         product_name = response.css('h1.fr-head span.title::text').get()
         product_price = response.css('span.fr-price-currency span:last-child::text').get()
 
@@ -107,7 +105,6 @@ class ProductSpider(Spider):
             item['price'] = product_price.strip()
             item['url'] = response.url
             
-            # Extract Product ID from the URL for reliability
             try:
                 # Example URL: /in/en/products/E473635-000
                 # This will extract 'E473635-000'
@@ -115,7 +112,7 @@ class ProductSpider(Spider):
             except IndexError:
                 item['product_id'] = None # Handle cases where the URL format is unexpected
 
-            # Extract ONLY product gallery image URLs (more specific selector)
+            # Extract ONLY product gallery image URLs
             image_urls = response.css('div.media-gallery--ec-renewal div.ec-renewal-image-wrapper.ecr-phase3-image-wrapper img::attr(src)').getall()
             
             # Clean up the image URLs and remove duplicates
@@ -124,13 +121,12 @@ class ProductSpider(Spider):
                 if url and url not in clean_image_urls:
                     # Optionally, you can modify the URL to get higher resolution images
                     # by changing the width parameter or removing it entirely
-                    high_res_url = url.replace('?width=369', '?width=750')  # or remove entirely for full size
+                    # or remove entirely for full size
+                    high_res_url = url.replace('?width=369', '?width=750')  
                     clean_image_urls.append(high_res_url)
             
             item['image_urls'] = clean_image_urls  # Store as a list
-            item['image_count'] = len(clean_image_urls)  # Optional: count of images
-            
-            # Keep the first image as the main image for backward compatibility
+            item['image_count'] = len(clean_image_urls)  # Count of images
             item['image_url'] = clean_image_urls[0] if clean_image_urls else None
 
             yield item
