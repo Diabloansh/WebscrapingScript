@@ -24,16 +24,16 @@ class ProductSpider(Spider):
 
             # Always block these resource types
             if resource_type in {"image", "font", "media"}:
-                route.abort()
+                route.abort() # pyright: ignore[reportUnusedCoroutine]
                 return
 
             # For stylesheets and scripts, use a whitelist approach
             if resource_type in {"stylesheet", "script"} and "uniqlo.com" not in url:
-                route.abort()
+                route.abort() # pyright: ignore[reportUnusedCoroutine]
                 return
             
             # Allow all other requests to continue
-            route.continue_()
+            route.continue_() # pyright: ignore[reportUnusedCoroutine]
         
         await page.route("**/*", handle_route)
 
@@ -96,7 +96,14 @@ class ProductSpider(Spider):
         """
         # Update selectors based on website HTML structure
         product_name = response.css('h1.fr-head span.title::text').get()
-        product_price = response.css('span.fr-price-currency span:last-child::text').get()
+        
+        # First try to get the sale price, if not found, get the regular price
+        product_price = response.css('span.price-limited-ER span.fr-price-currency span:last-child::text').get()
+        if not product_price:
+            product_price = response.css('div.dual-price-original-ER span.fr-price-currency span:last-child::text').get()
+            if not product_price:
+                # Fallback to the basic price selector for any other price format
+                product_price = response.css('span.price-original-ER span.fr-price-currency span:last-child::text').get()
 
         if product_name and product_price:
             self.logger.info(f"Scraped item: {product_name.strip()}")

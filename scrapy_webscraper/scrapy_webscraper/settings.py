@@ -17,13 +17,14 @@ ROBOTSTXT_OBEY = False
 # }
 
 # Configure maximum concurrent requests performed by Scrapy
-CONCURRENT_REQUESTS = 16
+CONCURRENT_REQUESTS = 10
 
 # Configure a delay for requests for the same website
-DOWNLOAD_DELAY = 0.10
+DOWNLOAD_DELAY = 1.0
+RANDOMIZE_DOWNLOAD_DELAY = True
 
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 12
+CONCURRENT_REQUESTS_PER_DOMAIN = 5
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -34,6 +35,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 12
 
 # Adjust logging level
 LOG_LEVEL = 'INFO'
+LOG_FILE = 'scraping.log'
 
 # Override the default request headers:
 # DEFAULT_REQUEST_HEADERS = {
@@ -73,3 +75,8 @@ DOWNLOAD_HANDLERS = {
 
 # Set the Twisted reactor for asyncio compatibility
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+
+# Retry settings
+RETRY_ENABLED = True
+RETRY_TIMES = 3
+RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
