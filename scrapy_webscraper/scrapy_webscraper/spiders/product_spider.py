@@ -196,89 +196,82 @@ class ProductSpider(Spider):
 
     def parse_product_variant(self, response):
         """
-        Extracts data from a specific product variant page.
-        Args:
-            response: The response object containing the product page HTML
-        Yields:
-            ProductItem: The scraped product data
+        Extracts data from a specific product variant page for a specific color.
         """
         item = ProductItem()
         variant_id = response.meta.get('variant_id')
         color_name = response.meta.get('color_name')
         color_code = variant_id.split('-COL')[-1] if variant_id else None
-
+        base_product_id = variant_id.split('-COL')[0] if variant_id else None
+        
         try:
-            # Extract required fields with validation
             product_name = response.css('h1.fr-head span.title::text').get()
-            if not product_name:
-                raise ValueError("Product name not found")
-            product_name = product_name.strip()
-
-            # Price extraction with validation
-            price_selectors = [
-                'span.price-limited-ER span.fr-price-currency span:last-child::text',
-                'div.dual-price-original-ER span.fr-price-currency span:last-child::text',
-                'span.price-original-ER span.fr-price-currency span:last-child::text'
-            ]
+            product_price = (
+                response.css('span.price-limited-ER span.fr-price-currency span:last-child::text').get() or
+                response.css('div.dual-price-original-ER span.fr-price-currency span:last-child::text').get() or
+                response.css('span.price-original-ER span.fr-price-currency span:last-child::text').get()
+            )
             
-            product_price = None
-            for selector in price_selectors:
-                product_price = response.css(selector).get()
-                if product_price:
-                    product_price = product_price.strip()
-                    break
-                    
-            if not product_price:
-                raise ValueError("Price not found")
+            if not product_name or not product_price:
+                raise ValueError("Missing required fields")
 
-            # Construct item with validated data
-            item['name'] = f"{product_name} - {color_name}" if color_name else product_name
+            item['name'] = f"{product_name.strip()} - {color_name}" if color_name else product_name.strip()
             item['product_id'] = variant_id
             item['url'] = response.url
-            item['price'] = product_price
+            item['price'] = product_price.strip()
             item['color_name'] = color_name
             item['color_code'] = color_code
-
-            # Image extraction with validation
-            image_urls = set()  # Using set to avoid duplicates
             
-            # Color-specific images
+            # Image extraction focusing on main product images only
+            image_urls = set()
+            
+            # Target the main product image section specifically
+            main_image_selectors = [
+                'section[data-section="product-image"] img::attr(src)',
+                'section[data-section="product-image"] img::attr(data-src)',
+                'div.product-main-image img::attr(src)',
+                'div.product-main-image img::attr(data-src)'
+            ]
+            
             if color_code:
-                color_specific_images = response.css(
-                    f'img[src*="goods_{color_code}_"]::attr(src), '
-                    f'img[src*="ingoods_{color_code}_"]::attr(src)'
-                ).getall()
-                
-                for url in color_specific_images:
-                    if url:
-                        high_res_url = url.replace('?width=369', '?width=750')
-                        image_urls.add(high_res_url)
-
-            # Common product images
-            other_images = response.css('div.media-gallery--ec-renewal img[src*="sub"]::attr(src)').getall()
-            for url in other_images:
-                if url:
-                    high_res_url = url.replace('?width=369', '?width=750')
-                    image_urls.add(high_res_url)
-
-            # Convert set to list and validate
-            image_urls = list(image_urls)
+                # Add color-specific patterns for main images only
+                color_patterns = [
+                    f'goods_{color_code}_{base_product_id}',
+                    f'ingoods_{color_code}_{base_product_id}'
+                ]
+                for selector in main_image_selectors:
+                    images = response.css(selector).getall()
+                    for img in images:
+                        if img and any(pattern in img for pattern in color_patterns):
+                            base_url = img.split('?')[0]
+                            image_urls.add(f"{base_url}?width=750")
+            
+            # If no color-specific images found, try getting any main product images
             if not image_urls:
-                self.logger.warning(f"No images found for {variant_id}")
+                for selector in main_image_selectors:
+                    images = response.css(selector).getall()
+                    for img in images:
+                        if img:
+                            base_url = img.split('?')[0]
+                            image_urls.add(f"{base_url}?width=750")
+                    
+            # Convert set back to list and sort for consistency
+            image_urls = sorted(list(image_urls))
+            
+            if not image_urls:
+                self.logger.warning(f"No images found for {variant_id} ({color_name})")
                 
             item['image_urls'] = image_urls
             item['image_count'] = len(image_urls)
             item['image_url'] = image_urls[0] if image_urls else None
-
-            # Log success and track statistics
-            self.logger.info(f"Successfully scraped: {item['name']} ({item['product_id']})")
+            
+            self.logger.info(f"Successfully scraped: {item['name']} ({item['product_id']}) with {item['image_count']} images")
             self.successful_products.add(variant_id)
             yield item
-
+            
         except Exception as e:
-            error_msg = f"{type(e).__name__}: {str(e)}"
-            self.failed_products[error_msg].append(variant_id)
-            self.logger.error(f"Failed to scrape {variant_id}: {error_msg}")
+            self.failed_products[str(e)].append(variant_id)
+            self.logger.error(f"Failed to scrape {variant_id}: {str(e)}")
             self.logger.error(f"URL: {response.url}")
 
     def errback_httpbin(self, failure):
