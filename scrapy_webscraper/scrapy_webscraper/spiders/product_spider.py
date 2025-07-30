@@ -12,7 +12,7 @@ class ProductSpider(Spider):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Track successful and failed scrapes
+        # Initialize sets and dictionaries to track successful and failed products
         self.successful_products: Set[str] = set()  # Set of successfully scraped product IDs
         self.failed_products: Dict[str, list] = defaultdict(list)  # Dict of failed product IDs and reasons
         self.total_variants_found = 0  # Total color variants found
@@ -48,13 +48,9 @@ class ProductSpider(Spider):
             """A synchronous handler for intercepting and blocking requests."""
             resource_type = route.request.resource_type
             url = route.request.url
-
-            # Always block these resource types
             if resource_type in {"image", "font", "media"}:
                 route.abort() # pyright: ignore[reportUnusedCoroutine]
                 return
-
-            # For stylesheets and scripts, use a whitelist approach
             if resource_type in {"stylesheet", "script"} and "uniqlo.com" not in url:
                 route.abort() # pyright: ignore[reportUnusedCoroutine]
                 return
@@ -103,7 +99,7 @@ class ProductSpider(Spider):
             self.logger.warning(f"No product links found on category page: {response.url}")
 
         for link in product_links:
-            # All subsequent requests for products also need Playwright.
+            # All requests for products also need Playwright.
             yield response.follow(
                 link, 
                 callback=self.parse_product,
@@ -165,7 +161,7 @@ class ProductSpider(Spider):
                             ],
                             'variant_id': variant_id,
                             'color_name': color_name,
-                            'dont_retry': False,  # Allow retries
+                            'dont_retry': False,  # Allow retries for failed requests
                             'handle_httpstatus_list': [404, 500, 502, 503, 504, 408, 429]
                             },
                             errback=self.errback_httpbin,
@@ -173,9 +169,9 @@ class ProductSpider(Spider):
                         )
             else:
                 self.logger.info(f"No color variants found on {response.url}.")
-                # Handle single product case...
+                # Handle single product case
                 try:
-                    # The ID is just the base ID since there are no variants.
+                    # The ID is just the base ID since there are no variants
                     product_id = response.url.split('/products/')[1].split('?')[0]
                     response.meta['variant_id'] = product_id
                     yield from self.parse_product_variant(response)

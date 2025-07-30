@@ -3,7 +3,7 @@
 import scrapy
 
 class ProductItem(scrapy.Item):
-    # Define the order of fields for JSON output
+    # Defining the order of fields for JSON output
     name = scrapy.Field()
     image_count = scrapy.Field()
     url = scrapy.Field()
