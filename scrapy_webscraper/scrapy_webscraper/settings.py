@@ -35,7 +35,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 5
 
 # Adjust logging level
 LOG_LEVEL = 'INFO'
-LOG_FILE = 'scraping.log'
+LOG_FILE = 'scraping3.log'
 
 # Override the default request headers:
 # DEFAULT_REQUEST_HEADERS = {
