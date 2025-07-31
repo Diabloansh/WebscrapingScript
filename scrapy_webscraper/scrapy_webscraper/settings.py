@@ -35,7 +35,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 5
 
 # Adjust logging level
 LOG_LEVEL = 'INFO'
-LOG_FILE = 'scraping.log'
+LOG_FILE = 'scraping3.log'
 
 # Override the default request headers:
 # DEFAULT_REQUEST_HEADERS = {
@@ -76,7 +76,15 @@ DOWNLOAD_HANDLERS = {
 # Set the Twisted reactor for asyncio compatibility
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 
-# Retry settings
+DOWNLOAD_TIMEOUT = 60
 RETRY_ENABLED = True
 RETRY_TIMES = 3
-RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
+RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 404, 429]
+
+PLAYWRIGHT_BROWSER_TYPE = 'chromium'
+PLAYWRIGHT_LAUNCH_OPTIONS = {
+    'timeout': 60000,  # Browser launch timeout
+    'headless': True,
+}
+
+PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 60000
