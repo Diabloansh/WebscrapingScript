@@ -140,7 +140,6 @@ dmypy.json
 uniqlo_products.*
 products.*
 scraped_data.*
-output.*
 data/
 downloads/
 *.jsonl
