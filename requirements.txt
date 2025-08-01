@@ -1,0 +1,8 @@
+# Minimal requirements.txt - just the core dependencies
+scrapy==2.13.3
+scrapy-playwright==0.0.40
+playwright==1.49.1
+lxml==6.0.0
+Twisted==25.5.0
+pyOpenSSL==25.1.0
+cryptography==45.0.5
