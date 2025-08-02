@@ -337,32 +337,33 @@ class WestsideSpider(Spider):
             # Extract product images with Westside/Shopify CDN URLs
             image_urls = set()
             
-            # Westside-specific image selectors based on the provided HTML
-            image_selectors = [
-                '.product__media img::attr(src)',
-                '.product-media-container img::attr(src)',
-                'media-gallery img::attr(src)',
-                '#MediaGallery img::attr(src)',
-                '.slider__slide img::attr(src)',
-                '[data-fancybox="gallery"]::attr(href)'
-            ]
+            # Only extract images from the main media gallery, excluding color swatches
+            # Use specific selector to target only the main product gallery
+            gallery_images = response.css('media-gallery img::attr(src)').getall()
             
-            for selector in image_selectors:
-                images = response.css(selector).getall()
-                for img in images:
-                    if img and ('cdn.shopify.com' in img or 'westside.com' in img):
-                        # Fix protocol-relative URLs (starting with //)
-                        if img.startswith('//'):
-                            img = f"https:{img}"
-                        elif not img.startswith(('http://', 'https://')):
-                            img = f"https://{img}"
-                        
-                        # Clean Shopify CDN URLs - remove existing parameters
-                        if '?' in img:
-                            base_img = img.split('?')[0]
-                        else:
-                            base_img = img
-                        
+            # Also get images from fancybox links within the media gallery
+            fancybox_images = response.css('media-gallery [data-fancybox="gallery"]::attr(href)').getall()
+            
+            # Combine both sets of images from the main gallery
+            all_gallery_images = gallery_images + fancybox_images
+            
+            for img in all_gallery_images:
+                if img and ('cdn.shopify.com' in img or 'westside.com' in img):
+                    # Fix protocol-relative URLs (starting with //)
+                    if img.startswith('//'):
+                        img = f"https:{img}"
+                    elif not img.startswith(('http://', 'https://')):
+                        img = f"https://{img}"
+                    
+                    # Clean Shopify CDN URLs - remove existing parameters
+                    if '?' in img:
+                        base_img = img.split('?')[0]
+                    else:
+                        base_img = img
+                    
+                    # Filter out color swatch images based on filename patterns
+                    # Swatch images typically have patterns like: 301008799001_5_20copy.jpg, 301021663016_5_20copy.jpg
+                    if not re.search(r'\d{3}_\d+_\d+copy', base_img):
                         # Add higher resolution parameter for Shopify CDN
                         enhanced_img = f"{base_img}?v=1&width=1200"
                         image_urls.add(enhanced_img)
