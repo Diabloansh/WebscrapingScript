@@ -138,6 +138,9 @@ dmypy.json
 
 # Scraped data files
 uniqlo_products.*
+nike_products.*
+ms_products.*
+westside_products.*
 products.*
 output.*
 scraped_data.*

@@ -1,10 +1,10 @@
 # Multi-Brand E-commerce Web Scraper
 
-A comprehensive web scraping solution for extracting product information from multiple e-commerce websites using Scrapy and Playwright for JavaScript-heavy pages. Currently supports **Uniqlo**, **Nike**, and **Marks & Spencer** with advanced color variant tracking and high-resolution image extraction.
+A comprehensive web scraping solution for extracting product information from multiple e-commerce websites using Scrapy and Playwright for JavaScript-heavy pages. Currently supports **Uniqlo**, **Nike**, **Marks & Spencer**, **Westside**, and **Zara** with advanced color variant tracking and high-resolution image extraction.
 
 ## 🚀 Features
 
-- **Multi-Brand Support**: Scrapes products from Uniqlo, Nike, and Marks & Spencer
+- **Multi-Brand Support**: Scrapes products from Uniqlo, Nike, Marks & Spencer, Westside, and Zara
 - **Comprehensive Product Data Extraction**: Scrapes product names, prices, IDs, URLs, and multiple high-resolution images
 - **Advanced Color Variant Tracking**: Extracts all color variants for each product with color names and codes
 - **JavaScript Rendering**: Uses Playwright integration for handling dynamic content on modern e-commerce sites
@@ -25,7 +25,9 @@ Ecommerce_Webscraping/
 │   │   │   ├── __init__.py
 │   │   │   ├── product_spider.py      # Uniqlo spider implementation
 │   │   │   ├── nike_spider.py         # Nike spider implementation
-│   │   │   └── MS_spider.py           # Marks & Spencer spider implementation
+│   │   │   ├── MS_spider.py           # Marks & Spencer spider implementation
+│   │   │   ├── westside_spider.py     # Westside spider implementation
+│   │   │   └── zara_spider.py         # Zara spider implementation
 │   │   ├── __init__.py
 │   │   ├── items.py                   # Data structure definitions
 │   │   ├── middlewares.py             # Custom middleware
@@ -34,7 +36,9 @@ Ecommerce_Webscraping/
 │   ├── outputs/                       # Organized output directory
 │   │   ├── Uniqlooutputs/            # Uniqlo detailed outputs
 │   │   ├── nikeoutputs/              # Nike detailed outputs
-│   │   └── MSoutputs/                # Marks & Spencer detailed outputs
+│   │   ├── MSoutputs/                # Marks & Spencer detailed outputs
+│   │   ├── westsideoutputs/          # Westside detailed outputs
+│   │   └── zaraoutputs/              # Zara detailed outputs
 │   ├── logs/                         # Comprehensive logging
 │   │   ├── scraping.log              # Main scraping logs
 │   │   ├── scraping2.log             # Additional session logs
@@ -88,11 +92,13 @@ Ecommerce_Webscraping/
 
 ### Available Spiders
 
-The project includes three specialized spiders:
+The project includes five specialized spiders:
 
 1. **Uniqlo Spider** (`product_spider`): Scrapes Uniqlo India with Playwright for JavaScript rendering
 2. **Nike Spider** (`nike_spider`): Scrapes Nike India with advanced color variant detection
 3. **Marks & Spencer Spider** (`ms_spider`): Scrapes Marks & Spencer India with optimized HTTP requests
+4. **Westside Spider** (`westside_spider`): Scrapes Westside India with Shopify-optimized extraction
+5. **Zara Spider** (`zara_spider`): Scrapes Zara India with Playwright and comprehensive color variant extraction
 
 ### Basic Usage
 
@@ -116,6 +122,19 @@ cd scrapy_webscraper
 scrapy crawl ms_spider -o outputs/ms_products.json
 ```
 
+**Westside Products**:
+```bash
+cd scrapy_webscraper
+scrapy crawl westside_spider -o outputs/westside_products.json
+```
+
+**Zara Products**:
+```bash
+cd scrapy_webscraper
+scrapy crawl zara_spider -o outputs/zara_products.json
+```
+
+
 ### Output Formats
 
 **JSON Output** (recommended):
@@ -128,6 +147,12 @@ scrapy crawl nike_spider -o outputs/nikeoutputs/nike_products.json
 
 # Marks & Spencer with optimized extraction
 scrapy crawl ms_spider -o outputs/MSoutputs/ms_products.json
+
+# Westside with Shopify-optimized extraction
+scrapy crawl westside_spider -o outputs/westsideoutputs/westside_products.json
+
+# Zara with comprehensive color variant tracking
+scrapy crawl zara_spider -o outputs/zaraoutputs/zara_products.json
 ```
 
 **CSV Output**:
@@ -135,6 +160,8 @@ scrapy crawl ms_spider -o outputs/MSoutputs/ms_products.json
 scrapy crawl product_spider -o outputs/uniqlo_products.csv
 scrapy crawl nike_spider -o outputs/nike_products.csv
 scrapy crawl ms_spider -o outputs/ms_products.csv
+scrapy crawl westside_spider -o outputs/westside_products.csv
+scrapy crawl zara_spider -o outputs/zara_products.csv
 ```
 
 **Custom Settings**:
@@ -149,19 +176,27 @@ scrapy crawl product_spider -s DOWNLOAD_DELAY=1 -s CONCURRENT_REQUESTS=2 -o outp
 scrapy crawl product_spider -o outputs/uniqlo_output.json
 scrapy crawl nike_spider -o outputs/nike_output.json  
 scrapy crawl ms_spider -o outputs/ms_output.json
+scrapy crawl westside_spider -o outputs/westside_output.json
+scrapy crawl zara_spider -o outputs/zara_output.json
 
 # Scraping with custom settings for faster execution
 scrapy crawl product_spider -s CONCURRENT_REQUESTS=8 -s DOWNLOAD_DELAY=0.5 -o outputs/uniqlo_fast.json
 scrapy crawl nike_spider -s CONCURRENT_REQUESTS=6 -s DOWNLOAD_DELAY=0.3 -o outputs/nike_fast.json
+scrapy crawl westside_spider -s CONCURRENT_REQUESTS=10 -s DOWNLOAD_DELAY=0.2 -o outputs/westside_fast.json
+scrapy crawl zara_spider -s CONCURRENT_REQUESTS=6 -s DOWNLOAD_DELAY=0.4 -o outputs/zara_fast.json
 
 # Scraping with detailed logging
 scrapy crawl product_spider -L DEBUG -o outputs/uniqlo_debug.json
 scrapy crawl nike_spider -L DEBUG -o outputs/nike_debug.json
 scrapy crawl ms_spider -L DEBUG -o outputs/ms_debug.json
+scrapy crawl westside_spider -L DEBUG -o outputs/westside_debug.json
+scrapy crawl zara_spider -L DEBUG -o outputs/zara_debug.json
 
 # Scraping specific number of items (using CLOSESPIDER_ITEMCOUNT)
 scrapy crawl product_spider -s CLOSESPIDER_ITEMCOUNT=100 -o outputs/uniqlo_sample.json
 scrapy crawl nike_spider -s CLOSESPIDER_ITEMCOUNT=50 -o outputs/nike_sample.json
+scrapy crawl westside_spider -s CLOSESPIDER_ITEMCOUNT=75 -o outputs/westside_sample.json
+scrapy crawl zara_spider -s CLOSESPIDER_ITEMCOUNT=60 -o outputs/zara_sample.json
 ```
 
 ## 📊 Data Structure
@@ -192,7 +227,7 @@ Each scraped product contains the following fields:
 | `url` | String | Full product page URL with color and size parameters |
 | `price` | String | Product price in local currency (INR for Indian sites) |
 | `color_name` | String | Human-readable color name (e.g., "BLUE", "NAVY", "OFF WHITE") |
-| `color_code` | String | Brand-specific color code (e.g., "67", "COL69") |
+| `color_code` | String | Brand-specific color code (e.g., "67", "COL69", "RED") |
 | `image_urls` | Array | List of all product gallery image URLs for the specific color |
 | `image_count` | Integer | Number of available product images for this color variant |
 | `image_url` | String | Primary product image URL (for backward compatibility) |
@@ -536,6 +571,8 @@ grep "ERROR" logs/*.log          # Error analysis across sessions
 | **Uniqlo** | `product_spider` | Playwright + Scrapy | Color variants, JavaScript rendering, high-res images |
 | **Nike** | `nike_spider` | Playwright + Scrapy | Advanced color detection, dynamic content loading |
 | **Marks & Spencer** | `ms_spider` | Pure Scrapy (HTTP) | Optimized performance, direct HTML parsing |
+| **Westside** | `westside_spider` | Pure Scrapy (HTTP) | Shopify-optimized extraction, color variant detection |
+| **Zara** | `zara_spider` | Playwright + Scrapy | Comprehensive color variants, high-res image extraction |
 
 ## 🚧 Future Enhancements
 

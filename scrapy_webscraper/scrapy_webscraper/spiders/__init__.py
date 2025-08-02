@@ -8,6 +8,8 @@ Available Spiders:
     product_spider: Uniqlo scraper with Playwright and color variant detection
     nike_spider: Nike scraper with advanced JavaScript handling and dynamic content
     ms_spider: Marks & Spencer scraper with optimized HTTP requests
+    westside_spider: Westside scraper with Shopify optimization
+    zara_spider: Zara scraper with advanced color variant detection and JavaScript rendering
 
 Each spider implements:
 - Brand-specific product URL detection
